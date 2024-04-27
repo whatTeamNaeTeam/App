@@ -14,6 +14,7 @@ class SignupPageState extends State<SignupPage> {
   FlutterSecureStorage storage = const FlutterSecureStorage();
   static TextEditingController studentIdController = TextEditingController();
   static TextEditingController nameController = TextEditingController();
+  static TextEditingController positionController = TextEditingController();
   void attemptRegistration() async {
     bool success = await ApiService.instance.registerUser();
     if (success && mounted) {
@@ -25,9 +26,10 @@ class SignupPageState extends State<SignupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,6 +50,14 @@ class SignupPageState extends State<SignupPage> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(6))),
                     labelText: "학번을 입력하세요.",
+                  ),
+                ),
+                TextField(
+                  controller: positionController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(6))),
+                    labelText: "주포지션을 입력하세요",
                   ),
                 ),
                 const SizedBox(height: 10),

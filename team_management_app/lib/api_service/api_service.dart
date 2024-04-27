@@ -142,6 +142,7 @@ class ApiService {
       }, body: {
         'student_num': SignupPageState.nameController.text,
         'name': SignupPageState.studentIdController.text,
+        'position': SignupPageState.positionController,
       });
 
       if (response.statusCode == 201) {

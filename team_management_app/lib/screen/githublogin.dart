@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:team_management_app/api_service/api_service.dart';
 import 'package:team_management_app/screen/teamcreate.dart';
 
-import 'unapprovedusers.dart'; // Testui 클래스가 정의된 파일
-
 class GithubLogin extends StatefulWidget {
   const GithubLogin({super.key});
 
@@ -12,7 +10,9 @@ class GithubLogin extends StatefulWidget {
 }
 
 class GithubLoginState extends State<GithubLogin> {
-  static bool isLoggedIn = false;
+  static bool isLoggedIn = true; // ui 테스트시 true
+  // static bool isLoggedIn = false; // 실제 구현시 false
+
   String clientID = '';
 
   void signIn() async {

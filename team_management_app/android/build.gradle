@@ -1,9 +1,25 @@
-allprojects {
+buildscript {
+    ext.kotlin_version = '1.7.10'  // 업데이트할 Kotlin 버전
     repositories {
         google()
         mavenCentral()
     }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.0'  // Gradle 플러그인 버전
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
+allprojects {
+    configurations.all {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'org.jetbrains.kotlin') {
+                details.useVersion kotlin_version
+            }
+        }
+    }
+}
+
+
 
 rootProject.buildDir = '../build'
 subprojects {

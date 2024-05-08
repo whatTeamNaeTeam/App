@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:team_management_app/api_service/api_service.dart';
-
-import 'testui.dart'; // Testui 클래스가 정의된 파일
+import 'package:team_management_app/screen/team-create/teamcreate.dart';
 
 class GithubLogin extends StatefulWidget {
   const GithubLogin({super.key});
@@ -11,7 +10,9 @@ class GithubLogin extends StatefulWidget {
 }
 
 class GithubLoginState extends State<GithubLogin> {
-  static bool isLoggedIn = false;
+  // static bool isLoggedIn = true; // ui 테스트시 true
+  static bool isLoggedIn = false; // 실제 구현시 false
+
   String clientID = '';
 
   void signIn() async {
@@ -26,10 +27,6 @@ class GithubLoginState extends State<GithubLogin> {
       setState(() {
         isLoggedIn = true; // 로그인 성공 시 isLoggedIn을 true로 설정
       });
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const UserListWidget())); // Testui 페이지로 이동
     }
   }
 
@@ -38,7 +35,7 @@ class GithubLoginState extends State<GithubLogin> {
     return Scaffold(
       body: Center(
         child: isLoggedIn
-            ? const UserListWidget() // 로그인 성공 시 Testui 위젯 표시
+            ? const TeamCreate() // 로그인 성공 시 Testui 위젯 표시
             : ElevatedButton(
                 onPressed: signIn,
                 child: const Text('Login with GitHub'),

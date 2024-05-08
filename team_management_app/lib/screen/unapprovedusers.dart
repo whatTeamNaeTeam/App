@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:team_management_app/model/user.dart';
 import 'package:team_management_app/screen/colors.dart';
-import 'api_service/api_service.dart';
+import '../api_service/api_service.dart';
 
 class UserListWidget extends StatefulWidget {
   const UserListWidget({super.key});
@@ -86,8 +86,11 @@ class UserListWidgetState extends State<UserListWidget> {
                                 style: TextButton.styleFrom(
                                   backgroundColor:
                                       Color(ButtonColors.indigo4color),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10)),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
                                 ),
                                 onPressed: () => approveUser(user.id),
                                 child: const Text("승인",
@@ -100,8 +103,10 @@ class UserListWidgetState extends State<UserListWidget> {
                                 style: TextButton.styleFrom(
                                   backgroundColor:
                                       Color(ButtonColors.red7color),
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 10),
                                   shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4)),
+                                      borderRadius: BorderRadius.circular(10)),
                                 ),
                                 onPressed: () {
                                   // 거절 로직 구현

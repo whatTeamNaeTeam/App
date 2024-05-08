@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
@@ -7,6 +8,7 @@ import 'package:team_management_app/screen/moresignup.dart';
 import 'package:team_management_app/service/storage_service.dart';
 import 'package:team_management_app/model/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 class ApiService {
   final String _signurl = LoadAPIAddress.loginapiurl();
@@ -142,6 +144,7 @@ class ApiService {
       }, body: {
         'student_num': SignupPageState.nameController.text,
         'name': SignupPageState.studentIdController.text,
+        'position': SignupPageState.positionController,
       });
 
       if (response.statusCode == 201) {
@@ -154,6 +157,46 @@ class ApiService {
       }
     } catch (e) {
       print('Error occurred: $e');
+      return false;
+    }
+  }
+
+  Future<bool> createNewTeam(projectTitle, projectGenre, projectFields,
+      memberCountList, markdownText, File? file, projectURL) async {
+    final String teamCreateUrl = LoadAPIAddress.createTeamUrl();
+    var url = Uri.parse(teamCreateUrl);
+    String? accessToken = await _storage.read(key: 'access');
+    try {
+      var request = http.MultipartRequest('POST', url)
+        ..headers['Authorization'] = 'Bearer $accessToken'
+        ..fields['name'] = projectTitle
+        ..fields['explain'] = markdownText
+        ..fields['genre'] = projectGenre
+        ..fields['urls'] = projectURL
+        ..fields['subCategory'] = projectFields.join(',') // 리스트를 문자열로 변환
+        ..fields['memberCount'] = memberCountList.join(','); // 리스트를 문자열로 변환
+
+      if (file != null) {
+        request.files.add(http.MultipartFile(
+          'image',
+          file.readAsBytes().asStream(),
+          file.lengthSync(),
+          filename: file.path.split('/').last,
+          contentType: MediaType('image', 'jpeg'), // 적절한 MIME 타입 설정
+        ));
+      }
+
+      var response = await request.send();
+      if (response.statusCode == 201) {
+        print('Registration successful');
+        return true;
+      } else {
+        print(
+            'Failed to register. Status code: ${response.statusCode}, Body: ${await response.stream.bytesToString()}');
+        return false;
+      }
+    } catch (e) {
+      print('Create New Team Error Occurred: $e');
       return false;
     }
   }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:team_management_app/allscreen.dart';
 import 'package:team_management_app/screen/entireappbar.dart';
-import 'githublogin.dart'; // GitHub 로그인 위젯을 포함하기 위한 임포트
+import 'screen/githublogin.dart'; // GitHub 로그인 위젯을 포함하기 위한 임포트
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 void main() async {
@@ -32,7 +33,7 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(),
       home: const Scaffold(
         appBar: EntireAppbar(),
-        body: GithubLogin(), // 통합된 GitHub 로그인 페이지
+        body: AllScreen(), // 통합된 GitHub 로그인 페이지
       ),
     );
   }

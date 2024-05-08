@@ -2,25 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:team_management_app/screen/colors.dart';
 
 class ReferenceLink extends StatefulWidget {
-  const ReferenceLink({super.key});
+  final List<TextEditingController> initialreferencelinks;
+  const ReferenceLink({super.key, required this.initialreferencelinks});
 
   @override
   State<ReferenceLink> createState() => _ReferenceLinkState();
 }
 
 class _ReferenceLinkState extends State<ReferenceLink> {
-  List<TextEditingController> controllers = [];
+  List<TextEditingController>? _controllers;
+
+  @override
+  void initState() {
+    _controllers?.clear();
+    super.initState();
+    _controllers = widget.initialreferencelinks;
+  }
 
   void addTextField() {
     setState(() {
-      controllers.add(TextEditingController());
+      _controllers?.add(TextEditingController());
     });
   }
 
   void removeTextField(int index) {
     setState(() {
-      controllers[index].dispose(); // 메모리 누수 방지
-      controllers.removeAt(index);
+      _controllers?[index].dispose(); // 메모리 누수 방지
+      _controllers?.removeAt(index);
     });
   }
 
@@ -51,11 +59,11 @@ class _ReferenceLinkState extends State<ReferenceLink> {
         ),
         ListView.builder(
           shrinkWrap: true,
-          itemCount: controllers.length,
+          itemCount: _controllers?.length,
           itemBuilder: (context, index) {
             return ListTile(
               title: TextField(
-                controller: controllers[index],
+                controller: _controllers?[index],
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(

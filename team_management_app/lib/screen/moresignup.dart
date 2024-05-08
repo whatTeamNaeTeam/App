@@ -27,7 +27,7 @@ class SignupPageState extends State<SignupPage> {
     return Scaffold(
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
@@ -51,6 +51,9 @@ class SignupPageState extends State<SignupPage> {
                         borderRadius: BorderRadius.all(Radius.circular(6))),
                     labelText: "학번을 입력하세요.",
                   ),
+                ),
+                const SizedBox(
+                  height: 10,
                 ),
                 TextField(
                   controller: positionController,

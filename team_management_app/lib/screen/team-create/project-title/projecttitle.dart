@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
 
 class ProjectTitle extends StatefulWidget {
-  const ProjectTitle({super.key});
+  final TextEditingController initialprojectTitleController; // 프로젝트 명*
+  const ProjectTitle({super.key, required this.initialprojectTitleController});
 
   @override
   State<ProjectTitle> createState() => _ProjectTitleState();
 }
 
 class _ProjectTitleState extends State<ProjectTitle> {
-  TextEditingController projecttitle = TextEditingController(); // 프로젝트 명*
+  TextEditingController? _projectTitleController; // 프로젝트 명*
+
+  @override
+  void initState() {
+    super.initState();
+    _projectTitleController = widget.initialprojectTitleController;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -21,7 +29,7 @@ class _ProjectTitleState extends State<ProjectTitle> {
         SizedBox(
           height: 50,
           child: TextField(
-            controller: projecttitle,
+            controller: _projectTitleController,
             decoration: const InputDecoration(
               border: OutlineInputBorder(
                 borderSide: BorderSide(

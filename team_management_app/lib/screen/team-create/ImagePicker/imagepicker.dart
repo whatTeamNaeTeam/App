@@ -5,7 +5,10 @@ import 'package:team_management_app/function/imagepicker.dart';
 import 'package:team_management_app/screen/colors.dart';
 
 class ImagePicker extends StatefulWidget {
-  const ImagePicker({super.key});
+  final File? initialimage;
+  final Function(File?) onImageUpdated; // 이미지 업데이트 콜백 함수
+  const ImagePicker(
+      {super.key, required this.initialimage, required this.onImageUpdated});
 
   @override
   State<ImagePicker> createState() => _ImagePickerState();
@@ -13,6 +16,25 @@ class ImagePicker extends StatefulWidget {
 
 class _ImagePickerState extends State<ImagePicker> {
   File? _image;
+
+  void _test() {
+    print(_image);
+  }
+
+  void _updateImage() async {
+    File? selectedImage = await pickImageFromGallery();
+    setState(() {
+      _image = selectedImage;
+    });
+    widget.onImageUpdated(selectedImage); // 부모에게 콜백을 통해 이미지 업데이트 알림
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _image = widget.initialimage;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -28,12 +50,7 @@ class _ImagePickerState extends State<ImagePicker> {
         Row(
           children: [
             InkWell(
-              onTap: () async {
-                File? selectedImage = await pickImageFromGallery();
-                setState(() {
-                  _image = selectedImage;
-                });
-              },
+              onTap: _updateImage,
               child: Container(
                 padding: const EdgeInsets.all(40),
                 decoration: BoxDecoration(
@@ -54,7 +71,11 @@ class _ImagePickerState extends State<ImagePicker> {
                 _image!,
                 width: 100,
                 height: 150,
-              )
+              ),
+            ElevatedButton(
+              onPressed: _test,
+              child: const Text("테스트"),
+            ),
           ],
         ),
       ],

@@ -2,13 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:team_management_app/screen/colors.dart';
 
 class AddButton extends StatefulWidget {
-  const AddButton({super.key});
+  final VoidCallback? onPressed;
+  const AddButton({
+    super.key,
+    this.onPressed,
+  });
 
   @override
   State<AddButton> createState() => _AddButtonState();
 }
 
 class _AddButtonState extends State<AddButton> {
+  // TODO 팀 생성 post
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
@@ -23,7 +28,7 @@ class _AddButtonState extends State<AddButton> {
           ),
         ),
       ),
-      onPressed: () {}, // 버튼 클릭 시 실행할 함수
+      onPressed: widget.onPressed, // 버튼 클릭 시 실행할 함수
       child: const Text(
         '등록',
         style: TextStyle(

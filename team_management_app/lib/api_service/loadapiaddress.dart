@@ -20,4 +20,8 @@ class LoadAPIAddress {
   static String approveurl(int userid) {
     return "$apiurl/api/user/manage/$userid";
   }
+
+  static String createTeamUrl() {
+    return "$apiurl/api/team/create";
+  }
 }

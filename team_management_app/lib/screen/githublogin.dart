@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:team_management_app/api_service/api_service.dart';
-import 'package:team_management_app/screen/teamcreate.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:team_management_app/screen/team-create/teamcreate.dart';
 
 class GithubLogin extends StatefulWidget {
   const GithubLogin({super.key});
@@ -11,8 +10,8 @@ class GithubLogin extends StatefulWidget {
 }
 
 class GithubLoginState extends State<GithubLogin> {
-  static bool isLoggedIn = true; // ui 테스트시 true
-  // static bool isLoggedIn = false; // 실제 구현시 false
+  // static bool isLoggedIn = true; // ui 테스트시 true
+  static bool isLoggedIn = false; // 실제 구현시 false
 
   String clientID = '';
 

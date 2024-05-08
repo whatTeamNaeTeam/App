@@ -1,7 +1,20 @@
 import 'package:flutter/material.dart';
-import 'githublogin.dart'; // GitHub 로그인 위젯을 포함하기 위한 임포트
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:team_management_app/allscreen.dart';
+import 'package:team_management_app/screen/entireappbar.dart';
+import 'screen/githublogin.dart'; // GitHub 로그인 위젯을 포함하기 위한 임포트
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+  const storage = FlutterSecureStorage();
+  final clientID = dotenv.env['CLIENT_ID'];
+
+  if (clientID != null) {
+    await storage.write(key: 'clientID', value: clientID);
+  }
+
   runApp(const MyApp());
 }
 
@@ -13,34 +26,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      home: const Scaffold(
+        appBar: EntireAppbar(),
+        body: AllScreen(), // 통합된 GitHub 로그인 페이지
       ),
-      body: const GithubLogin(), // 통합된 GitHub 로그인 페이지
     );
   }
 }

@@ -1,7 +1,8 @@
 {
   "java.configuration.updateBuildConfiguration": "automatic",
   "cSpell.words": [
-    "peoplenumber"
+    "peoplenumber",
+    "Teaminquiry"
   ],
   "java.compile.nullAnalysis.mode": "automatic"
 }

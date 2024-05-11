@@ -21,7 +21,18 @@ class LoadAPIAddress {
     return "$apiurl/api/user/manage/$userid";
   }
 
+// 팀 생성 API
   static String createTeamUrl() {
     return "$apiurl/api/team/create";
+  }
+
+// 팀 미승인 목록 API
+  static String getapproveTeamurl() {
+    return "$apiurl/api/admin/team/manage";
+  }
+
+  // 팀 미승인 목록 API
+  static String approveTeamurl(int teamid) {
+    return "$apiurl/api/admin/team/manage/$teamid";
   }
 }

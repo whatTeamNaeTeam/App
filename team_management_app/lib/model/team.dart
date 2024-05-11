@@ -1,21 +1,19 @@
-import 'dart:io';
-
-class Team {
-  String? title;
-  String? explain;
-  String? genre;
-  File? image;
-  List<String>? urls;
-  List<String>? subCategory;
-  List<String>? memberCount;
-
-  Team({
-    required this.title,
-    required this.explain,
-    required this.genre,
-    required this.image,
-    required this.urls,
-    required this.subCategory,
-    required this.memberCount,
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+class UnapproveTeam {
+  final int id;
+  final String name;
+  final String created_at;
+  UnapproveTeam({
+    required this.id,
+    required this.name,
+    required this.created_at,
   });
+
+  factory UnapproveTeam.fromJson(Map<String, dynamic> json) {
+    return UnapproveTeam(
+      id: json['id'] ?? 'Unknown', // 기본값 제공
+      name: json['name'] ?? 'No Number', // 기본값 제공
+      created_at: json['created_at'] ?? 0, // 기본값 제공
+    );
+  }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:team_management_app/api_service/loadapiaddress.dart';
+import 'package:team_management_app/model/team.dart';
 import 'package:team_management_app/screen/moresignup.dart';
 import 'package:team_management_app/service/storage_service.dart';
 import 'package:team_management_app/model/user.dart';
@@ -161,6 +162,7 @@ class ApiService {
     }
   }
 
+// 팀을 만드는 Future 함수
   Future<bool> createNewTeam(projectTitle, projectGenre, projectFields,
       memberCountList, markdownText, File? file, projectURL) async {
     final String teamCreateUrl = LoadAPIAddress.createTeamUrl();
@@ -198,6 +200,69 @@ class ApiService {
     } catch (e) {
       print('Create New Team Error Occurred: $e');
       return false;
+    }
+  }
+
+// 미승인 팀 목록 불러오기
+  Future<void> getunApproveTeams(unapproveTeams) async {
+    final String approveTeamurl = LoadAPIAddress.getapproveTeamurl();
+    String? accessToken = await _storage.read(key: 'access');
+    if (accessToken == null) {
+      print("approveTeam : Access Token is null");
+      return;
+    }
+    try {
+      final response = await http.get(Uri.parse(approveTeamurl), headers: {
+        'X-from': 'app',
+        'Authorization': 'Bearer $accessToken',
+      });
+      String responseBody = utf8.decode(response.bodyBytes);
+      print('Response body: $responseBody'); // 응답 내용 로깅
+      if (response.statusCode == 200) {
+        var data = json.decode(responseBody);
+        if (data is List) {
+          unapproveTeams.clear();
+          for (var teamJson in data) {
+            unapproveTeams.add(UnapproveTeam.fromJson(teamJson));
+          }
+        } else {
+          print(
+              "getunApproveTeams : Error => Expected a list of teams but got something else.");
+        }
+      } else {
+        print(
+            'Failed to load getUsers from server with status code ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error getunApproveTeams: $e");
+    }
+  }
+
+  // 관리자페이지에서 팀 승인
+  Future<void> approveTeams(int teamid) async {
+    String approveurl = LoadAPIAddress.approveTeamurl(teamid);
+    String? accessToken = await _storage.read(key: 'access');
+    print(accessToken);
+    var url = Uri.parse(approveurl);
+    try {
+      final response = await http.patch(url,
+          headers: {
+            'Content-Type': 'application/json', // JSON 형식 명시
+            'X-from': 'app',
+            'Authorization': 'Bearer $accessToken',
+          },
+          body: json.encode({
+            'success': 'true' // JSON 문자열로 변환
+          }));
+
+      if (response.statusCode == 200) {
+        print("approveTeams : Team approved successfully.");
+      } else {
+        print(
+            "approveTeams : Failed to approve team. Status code: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("approveTeams : Error approveTeams: $e");
     }
   }
 }

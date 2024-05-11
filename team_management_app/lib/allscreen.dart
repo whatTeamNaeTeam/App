@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:team_management_app/screen/githublogin.dart';
+import 'package:team_management_app/screen/management/unapproveteams.dart';
 import 'package:team_management_app/screen/moresignup.dart';
 import 'package:team_management_app/screen/team-create/teamcreate.dart';
+import 'package:team_management_app/screen/team-inquiry/teaminquiry.dart';
+import 'package:team_management_app/screen/management/unapprovedusers.dart';
 
 class AllScreen extends StatefulWidget {
   const AllScreen({super.key});
@@ -32,6 +35,33 @@ class _AllScreenState extends State<AllScreen> {
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const TeamCreate())),
               child: const Text("팀 생성 페이지"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const Teaminquiry())),
+              child: const Text("팀 조회 페이지"),
+            ),
+            const Divider(),
+            const Text(
+              "관리자",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UnApproveTeams())),
+              child: const Text("미승인 팀 조회 페이지"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const UserListWidget())),
+              child: const Text("미승인 회원 조회 페이지"),
             ),
           ],
         ),

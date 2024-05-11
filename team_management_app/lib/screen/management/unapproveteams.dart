@@ -1,51 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:team_management_app/model/user.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:team_management_app/api_service/api_service.dart';
+import 'package:team_management_app/model/team.dart';
 import 'package:team_management_app/screen/colors.dart';
-import '../api_service/api_service.dart';
+import 'package:team_management_app/screen/entireappbar.dart';
 
-class UserListWidget extends StatefulWidget {
-  const UserListWidget({super.key});
+class UnApproveTeams extends StatefulWidget {
+  const UnApproveTeams({super.key});
 
   @override
-  UserListWidgetState createState() => UserListWidgetState();
+  State<UnApproveTeams> createState() => _UnApproveTeamsState();
 }
 
-class UserListWidgetState extends State<UserListWidget> {
+class _UnApproveTeamsState extends State<UnApproveTeams> {
   bool isLoading = true;
-  List<User> unapprovedUsers = [];
+  List<UnapproveTeam> unapproveTeams = [];
 
   @override
   void initState() {
     super.initState();
-    loadUsers();
+    loadTeams();
   }
 
-  void loadUsers() async {
+  void loadTeams() async {
     setState(() => isLoading = true);
-    await ApiService.instance.getUsers();
-    unapprovedUsers = ApiService.users;
-    setState(() {
-      isLoading = false;
-      // 승인 대기 사용자 수 업데이트
-    });
+    await ApiService.instance.getunApproveTeams(unapproveTeams);
+    setState(() => isLoading = false);
   }
 
-  void approveUser(int userId) async {
-    await ApiService.instance.approveUsers(userId);
-    loadUsers(); // 승인 후 사용자 목록을 다시 불러옴
+  void approveTeam(int teamid) async {
+    // TODO 팀 승인 기능 추가
+    await ApiService.instance.approveTeams(teamid);
+    loadTeams();
   }
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text("Loading Users...")),
+        appBar: AppBar(title: const Text("Loading Teams...")),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
-
     return Scaffold(
+      appBar: const EntireAppbar(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -57,7 +55,7 @@ class UserListWidgetState extends State<UserListWidget> {
                     width: 24, height: 24),
                 const SizedBox(width: 10),
                 Text(
-                  "승인 대기중(${unapprovedUsers.length})",
+                  "승인 대기중(${unapproveTeams.length})",
                   style: const TextStyle(
                       fontSize: 18, fontWeight: FontWeight.bold),
                 ),
@@ -67,18 +65,18 @@ class UserListWidgetState extends State<UserListWidget> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: unapprovedUsers.isEmpty
-                  ? const Center(child: Text("No unapproved users found."))
+              child: unapproveTeams.isEmpty
+                  ? const Center(child: Text("No unapproved Teams found."))
                   : ListView.builder(
-                      itemCount: unapprovedUsers.length,
+                      itemCount: unapproveTeams.length,
                       itemBuilder: (context, index) {
-                        User user = unapprovedUsers[index];
+                        UnapproveTeam unTeam = unapproveTeams[index];
                         return ListTile(
                           title: Text(
-                            user.name,
+                            unTeam.name,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text(user.studentNum),
+                          subtitle: Text("${unTeam.id}"),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -92,7 +90,7 @@ class UserListWidgetState extends State<UserListWidget> {
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                 ),
-                                onPressed: () => approveUser(user.id),
+                                onPressed: () => approveTeam(unTeam.id),
                                 child: const Text("승인",
                                     style: TextStyle(color: Colors.white)),
                               ),

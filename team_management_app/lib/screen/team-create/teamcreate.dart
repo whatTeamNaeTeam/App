@@ -47,7 +47,7 @@ class _TeamCreateState extends State<TeamCreate> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(

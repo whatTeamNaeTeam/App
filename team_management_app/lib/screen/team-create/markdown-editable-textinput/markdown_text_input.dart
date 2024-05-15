@@ -1,9 +1,8 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:team_management_app/screen/colors.dart';
+import 'package:team_management_app/assets/color/colors.dart';
 import 'package:team_management_app/screen/team-create/markdown-editable-textinput/format_markdown.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:team_management_app/screen/team-create/teamcreate.dart';
 
 class MarkdownTextInput extends StatefulWidget {
   /// Callback called when text changed

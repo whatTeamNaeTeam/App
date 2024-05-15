@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:team_management_app/screen/entireappbar.dart';
 
 class Teaminquiry extends StatefulWidget {
   const Teaminquiry({super.key});
@@ -10,10 +11,9 @@ class Teaminquiry extends StatefulWidget {
 class _TeaminquiryState extends State<Teaminquiry> {
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        // ListView.builder(itemBuilder:)
-      ],
+    return const Scaffold(
+      appBar: EntireAppbar(),
+      body: Column(),
     );
   }
 }

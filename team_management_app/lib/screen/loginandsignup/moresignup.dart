@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:team_management_app/api_service/api_service.dart';
-import '../main.dart';
+import '../../main.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SignupPage extends StatefulWidget {

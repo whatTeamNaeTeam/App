@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:team_management_app/screen/colors.dart';
+import 'package:team_management_app/assets/color/colors.dart';
 
 class CancelButton extends StatefulWidget {
   const CancelButton({super.key});

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:list_picker/list_picker.dart'; // 이 패키지는 가정하에 사용합니다.
-import 'package:team_management_app/screen/colors.dart';
+import 'package:team_management_app/assets/color/colors.dart';
 
 class FieldList extends StatefulWidget {
   final List<TextEditingController> initialcontrollers;

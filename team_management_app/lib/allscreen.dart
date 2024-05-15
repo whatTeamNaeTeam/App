@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:team_management_app/screen/githublogin.dart';
+import 'package:team_management_app/screen/loginandsignup/githublogin.dart';
+import 'package:team_management_app/screen/management/teammanagement.dart';
 import 'package:team_management_app/screen/management/unapproveteams.dart';
-import 'package:team_management_app/screen/moresignup.dart';
+import 'package:team_management_app/screen/loginandsignup/moresignup.dart';
 import 'package:team_management_app/screen/team-create/teamcreate.dart';
 import 'package:team_management_app/screen/team-inquiry/teaminquiry.dart';
 import 'package:team_management_app/screen/management/unapprovedusers.dart';
@@ -62,6 +63,13 @@ class _AllScreenState extends State<AllScreen> {
                   MaterialPageRoute(
                       builder: (context) => const UserListWidget())),
               child: const Text("미승인 회원 조회 페이지"),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TeamManagement())),
+              child: const Text("팀 관리 페이지"),
             ),
           ],
         ),

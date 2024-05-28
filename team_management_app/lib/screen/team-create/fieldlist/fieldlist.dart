@@ -4,7 +4,9 @@ import 'package:team_management_app/assets/color/colors.dart';
 
 class FieldList extends StatefulWidget {
   final List<TextEditingController> initialcontrollers;
-  const FieldList({super.key, required this.initialcontrollers});
+  final List<int> members;
+  const FieldList(
+      {super.key, required this.initialcontrollers, required this.members});
 
   @override
   State<FieldList> createState() => _FieldListState();
@@ -25,11 +27,13 @@ class _FieldListState extends State<FieldList> {
   List<TextEditingController> subcontrollers = [];
   List<Widget> majorFieldsWidgets = [];
   List<Widget> subFieldsWidgets = [];
+  List<int> counts = []; // 인원수를 저장하는 리스트
 
   @override
   void initState() {
     super.initState();
     subcontrollers = widget.initialcontrollers; // 부모로부터 초기 컨트롤러 리스트를 받습니다.
+    counts = widget.members;
   }
 
   void addListItem() {
@@ -47,6 +51,7 @@ class _FieldListState extends State<FieldList> {
         controller: controller,
       ));
       subFieldsWidgets.add(Container()); // 초기에는 비어있는 컨테이너 추가
+      counts.add(1); // 기본값 1로 초기화
     });
   }
 
@@ -73,6 +78,7 @@ class _FieldListState extends State<FieldList> {
       controllers.removeAt(index);
       majorFieldsWidgets.removeAt(index);
       subFieldsWidgets.removeAt(index);
+      counts.removeAt(index); // 인원수 제거
 
       // 서브 컨트롤러가 존재하는지 확인하고 제거
       if (index < subcontrollers.length) {
@@ -109,31 +115,49 @@ class _FieldListState extends State<FieldList> {
             ),
           ],
         ),
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.25,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: majorFieldsWidgets.length,
-            itemBuilder: (context, index) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      majorFieldsWidgets[index],
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => removeListItem(index),
-                      ),
-                    ],
-                  ),
-                  subFieldsWidgets[index],
-                ],
-              );
-            },
-          ),
+        Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: majorFieldsWidgets.length,
+              itemBuilder: (context, index) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: majorFieldsWidgets[index],
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: subFieldsWidgets[index],
+                    ),
+                    const SizedBox(
+                      width: 30,
+                    ),
+                    DropdownButton<int>(
+                      value: counts[index],
+                      items: List.generate(10, (i) => i + 1)
+                          .map((e) => DropdownMenuItem<int>(
+                                value: e,
+                                child: Text(e.toString()),
+                              ))
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          counts[index] = value!;
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.remove_circle, color: Colors.red),
+                      onPressed: () => removeListItem(index),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
         ),
       ],
     );

@@ -13,6 +13,7 @@ class EntireAppbar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       backgroundColor: Colors.white, // AppBar 배경 투명 설정
       elevation: 0, // AppBar 그림자 제거
+      automaticallyImplyLeading: false,
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.favorite), // 아이콘 설정

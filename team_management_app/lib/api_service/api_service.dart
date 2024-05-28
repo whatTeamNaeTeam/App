@@ -5,7 +5,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:team_management_app/api_service/loadapiaddress.dart';
 import 'package:team_management_app/model/team.dart';
-import 'package:team_management_app/screen/moresignup.dart';
+import 'package:team_management_app/screen/loginandsignup/moresignup.dart';
 import 'package:team_management_app/service/storage_service.dart';
 import 'package:team_management_app/model/user.dart';
 import 'package:http/http.dart' as http;

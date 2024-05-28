@@ -23,6 +23,8 @@ class _TeamCreateState extends State<TeamCreate> {
   final TextEditingController _genre = TextEditingController();
   // 전공분야 고르기 초기 배열
   final List<TextEditingController> _fields = [];
+  // 멤버 수 count
+  final List<int> _members = [];
   // markdownText 초기 값
   String _markdownText = "";
   // 이미지 파일 초기 값
@@ -47,7 +49,7 @@ class _TeamCreateState extends State<TeamCreate> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
@@ -68,6 +70,7 @@ class _TeamCreateState extends State<TeamCreate> {
               // 모집 분야
               FieldList(
                 initialcontrollers: _fields,
+                members: _members,
               ), // 모집 인원
               const SizedBox(height: 23),
               // 이미지 가져오기
@@ -103,6 +106,8 @@ class _TeamCreateState extends State<TeamCreate> {
               const SizedBox(height: 10), // 버튼 사이의 간격
               // 취소 버튼
               const CancelButton(),
+
+              TextButton(onPressed: test, child: const Text('테스트'))
             ],
           ),
         ),
@@ -110,10 +115,28 @@ class _TeamCreateState extends State<TeamCreate> {
     );
   }
 
+  void test() {
+    updatefunction();
+
+    print("프로젝트 제목: $projectTitle");
+
+    print("프로젝트 장르: $projectGenre");
+
+    print("전공 분야: $projectFields");
+
+    print("멤버 수: $_members");
+
+    print("마크 다운: $_markdownText");
+
+    print("파일: $_file");
+
+    print("참조 링크: $projectURL");
+  }
+
   void registerTeam() {
     updatefunction();
     ApiService.instance.createNewTeam(projectTitle, projectGenre, projectFields,
-        memberCountList, _markdownText, _file, projectURL);
+        _members, _markdownText, _file, projectURL);
     // print("프로젝트 제목: $projectTitle");
 
     // print("프로젝트 장르: $projectGenre");
@@ -139,14 +162,6 @@ class _TeamCreateState extends State<TeamCreate> {
           .join(','); // url String 타입으로
       projectFields =
           _fields.map((controller) => controller.text).toList(); // 분야를 리스트로
-
-      Map<String, int> memberCounts = {}; // 분야별 인원 수 계산
-      for (String field in projectFields!) {
-        memberCounts[field] =
-            (memberCounts[field] ?? 0) + 1; // null을 확인하고 0으로 처리, 그 후 1 증가
-      }
-
-      memberCountList = memberCounts.values.toList(); // 인원수만 배열로
     });
   }
 }

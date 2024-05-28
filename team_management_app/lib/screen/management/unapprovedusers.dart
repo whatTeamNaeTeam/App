@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:team_management_app/model/user.dart';
-import 'package:team_management_app/screen/colors.dart';
+import 'package:team_management_app/assets/color/colors.dart';
 import 'package:team_management_app/screen/entireappbar.dart';
 import '../../api_service/api_service.dart';
 

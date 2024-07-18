@@ -45,7 +45,7 @@ class _ReferenceLinkState extends State<ReferenceLink> {
             const Spacer(),
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Color(ButtonColors.indigo4color),
+                backgroundColor: const Color(ButtonColors.indigo4),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -76,9 +76,9 @@ class _ReferenceLinkState extends State<ReferenceLink> {
               trailing: SizedBox(
                 width: 20,
                 child: IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.remove_circle,
-                    color: Color(ButtonColors.red7color),
+                    color: Color(ButtonColors.red7),
                     size: 24,
                   ),
                   onPressed: () => removeTextField(index),

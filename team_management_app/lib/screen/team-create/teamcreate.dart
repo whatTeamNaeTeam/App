@@ -106,8 +106,7 @@ class _TeamCreateState extends State<TeamCreate> {
               const SizedBox(height: 10), // 버튼 사이의 간격
               // 취소 버튼
               const CancelButton(),
-
-              TextButton(onPressed: test, child: const Text('테스트'))
+              // TextButton(onPressed: test, child: const Text('테스트'))
             ],
           ),
         ),
@@ -115,23 +114,23 @@ class _TeamCreateState extends State<TeamCreate> {
     );
   }
 
-  void test() {
-    updatefunction();
+  // void test() {
+  //   updatefunction();
 
-    print("프로젝트 제목: $projectTitle");
+  //   print("프로젝트 제목: $projectTitle");
 
-    print("프로젝트 장르: $projectGenre");
+  //   print("프로젝트 장르: $projectGenre");
 
-    print("전공 분야: $projectFields");
+  //   print("전공 분야: $projectFields");
 
-    print("멤버 수: $_members");
+  //   print("멤버 수: $_members");
 
-    print("마크 다운: $_markdownText");
+  //   print("마크 다운: $_markdownText");
 
-    print("파일: $_file");
+  //   print("파일: $_file");
 
-    print("참조 링크: $projectURL");
-  }
+  //   print("참조 링크: $projectURL");
+  // }
 
   void registerTeam() {
     updatefunction();

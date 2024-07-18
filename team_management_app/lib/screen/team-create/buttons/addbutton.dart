@@ -19,8 +19,8 @@ class _AddButtonState extends State<AddButton> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 50), // 최소 크기 설정
-        backgroundColor: Color(
-          ButtonColors.indigo4color,
+        backgroundColor: const Color(
+          ButtonColors.indigo4,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(

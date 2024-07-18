@@ -83,7 +83,7 @@ class UserListWidgetState extends State<UserListWidget> {
                               TextButton(
                                 style: TextButton.styleFrom(
                                   backgroundColor:
-                                      Color(ButtonColors.indigo4color),
+                                      const Color(ButtonColors.indigo4),
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 10),
                                   shape: RoundedRectangleBorder(
@@ -100,7 +100,7 @@ class UserListWidgetState extends State<UserListWidget> {
                               TextButton(
                                 style: TextButton.styleFrom(
                                   backgroundColor:
-                                      Color(ButtonColors.red7color),
+                                      const Color(ButtonColors.red7),
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 10),
                                   shape: RoundedRectangleBorder(

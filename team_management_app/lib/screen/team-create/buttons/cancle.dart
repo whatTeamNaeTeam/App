@@ -14,7 +14,7 @@ class _CancelButtonState extends State<CancelButton> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 50), // 최소 크기 설정
-        backgroundColor: Color(ButtonColors.red7color),
+        backgroundColor: const Color(ButtonColors.red7),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(
             10,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:team_management_app/api_service/api_service.dart';
-import 'package:team_management_app/screen/team-create/teamcreate.dart';
+import 'package:team_management_app/screen/loginandsignup/moresignup.dart';
+import 'package:team_management_app/screen/team-inquiry/teaminquiry.dart';
 
 class GithubLogin extends StatefulWidget {
   const GithubLogin({super.key});
@@ -10,8 +11,7 @@ class GithubLogin extends StatefulWidget {
 }
 
 class GithubLoginState extends State<GithubLogin> {
-  // static bool isLoggedIn = true; // ui 테스트시 true
-  static bool isLoggedIn = false; // 실제 구현시 false
+  static bool? isLoggedIn = false; // 로그인 상태를 나타내는 bool
 
   String clientID = '';
 
@@ -20,8 +20,14 @@ class GithubLoginState extends State<GithubLogin> {
     bool result = await ApiService.instance.signInWithGitHub(context);
     if (!result) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('ClientID 오류 또는 서버 오류')));
+      // 추가 정보 입력란으로 넘어가기
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SignupPage(),
+          ));
+      // ScaffoldMessenger.of(context)
+      //     .showSnackBar(const SnackBar(content: Text('알수 없는 오류가 발생했습니다.')));
     } else {
       if (!mounted) return;
       setState(() {
@@ -34,8 +40,8 @@ class GithubLoginState extends State<GithubLogin> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: isLoggedIn
-            ? const TeamCreate() // 로그인 성공 시 Testui 위젯 표시
+        child: isLoggedIn!
+            ? const Teaminquiry() // 로그인 성공 시 메인페이지로 넘어가기 - 팀 조회 페이지
             : ElevatedButton(
                 onPressed: signIn,
                 child: const Text('Login with GitHub'),

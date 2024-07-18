@@ -295,7 +295,7 @@ class _MarkdownTextInputState extends State<MarkdownTextInput> {
             preview
                 ? TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: Color(ButtonColors.indigo4color),
+                      backgroundColor: const Color(ButtonColors.indigo4),
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -312,7 +312,7 @@ class _MarkdownTextInputState extends State<MarkdownTextInput> {
                   )
                 : TextButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: Color(ButtonColors.indigo4color),
+                      backgroundColor: const Color(ButtonColors.indigo4),
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),

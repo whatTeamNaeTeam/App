@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 
 class EntireAppbar extends StatelessWidget implements PreferredSizeWidget {
@@ -5,7 +6,7 @@ class EntireAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   void appbarmainpage() {
     // AppBar 메인 페이지 로직
-    print("AppBar icon tapped");
+    log("AppBar icon tapped");
   }
 
   @override

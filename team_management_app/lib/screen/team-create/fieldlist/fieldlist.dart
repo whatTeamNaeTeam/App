@@ -103,7 +103,7 @@ class _FieldListState extends State<FieldList> {
             ),
             TextButton(
               style: TextButton.styleFrom(
-                backgroundColor: Color(ButtonColors.indigo4color),
+                backgroundColor: const Color(ButtonColors.indigo4),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),

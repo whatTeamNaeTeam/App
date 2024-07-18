@@ -55,7 +55,7 @@ class _ImagePickerState extends State<ImagePicker> {
                 padding: const EdgeInsets.all(40),
                 decoration: BoxDecoration(
                   border: Border.all(
-                      color: Color(ButtonColors.gray4color), width: 2),
+                      color: const Color(ButtonColors.gray4), width: 2),
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,

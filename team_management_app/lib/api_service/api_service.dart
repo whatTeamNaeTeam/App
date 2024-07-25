@@ -3,11 +3,13 @@ import 'dart:developer';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'package:team_management_app/model/team.dart';
 import 'package:team_management_app/model/user.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:team_management_app/provider/userdata_provider.dart';
 
 class ApiService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -30,7 +32,6 @@ class ApiService {
         String? accessToken = await _storage.read(key: 'access');
         if (accessToken != null) {
           options.headers['Authorization'] = 'Bearer $accessToken';
-          log('Authorization Header Added: Bearer $accessToken');
         } else {
           log('No Access Token Found');
         }
@@ -98,11 +99,11 @@ class ApiService {
   }
 
 // 깃허브 소셜 로그인 함수
-  Future<bool> signInWithGitHub(BuildContext context) async {
+  Future<void> signInWithGitHub(WidgetRef ref) async {
     final clientID = await _storage.read(key: 'clientID');
     if (clientID == null) {
       log('Client ID is null');
-      return false;
+      ref.read(loginStatusProvider.notifier).state = false;
     }
 
     try {
@@ -125,36 +126,49 @@ class ApiService {
           log('Success Github login');
           final accessToken = response.headers.value('access');
           if (accessToken != null) {
-            await _storage.write(key: 'access', value: accessToken);
-            log('accessToken: $accessToken');
+            await _storage.write(
+                key: 'access',
+                value: accessToken); // accessToken을 Flutter SecureStorage에 갱신하기
           }
-          var userData = response.data;
+          final userData = response.data as Map<String, dynamic>?;
           log('User data: $userData');
-          return userData['registered'];
+
+          // userData와 registered 키의 존재 여부 확인
+          if (userData != null && userData.containsKey('registered')) {
+            // 사용자 정보를 프로바이더에 설정합니다.
+            ref.read(userProvider.notifier).state =
+                userData; // user 데이터를 userProvider에 저장
+            ref.read(loginStatusProvider.notifier).state =
+                userData['registered'] as bool; // 로그인 상태를 true로 변경
+          } else {
+            log('User data does not contain "registered" key');
+            ref.read(loginStatusProvider.notifier).state = false;
+          }
         } else {
           log('Failed to login. Status code: ${response.statusCode}, response: ${response.data}');
-          return false;
+          ref.read(loginStatusProvider.notifier).state = false;
         }
       } else {
         log('Authorization code is null');
-        return false;
+        ref.read(loginStatusProvider.notifier).state = false;
       }
     } on PlatformException catch (e) {
       if (e.code == 'CANCELED') {
         log('Login canceled by user: $e');
-        _showRetryDialog(context);
+        _showRetryDialog(ref);
       } else {
         log('PlatformException during login: $e');
       }
-      return false;
+      ref.read(loginStatusProvider.notifier).state = false;
     } catch (e) {
       log('Exception during login: $e');
-      return false;
+      ref.read(loginStatusProvider.notifier).state = false;
     }
   }
 
 // 로그인이 취소되었을때 다시 시도하는 함수
-  void _showRetryDialog(BuildContext context) {
+  void _showRetryDialog(WidgetRef ref) {
+    final context = ref.read(navigatorProvider).currentContext!;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -172,7 +186,7 @@ class ApiService {
               child: const Text('다시 시도'),
               onPressed: () {
                 Navigator.of(context).pop();
-                signInWithGitHub(context); // 다시 시도
+                signInWithGitHub(ref); // 다시 시도
               },
             ),
           ],
@@ -180,6 +194,10 @@ class ApiService {
       },
     );
   }
+
+  final navigatorProvider = Provider<GlobalKey<NavigatorState>>((ref) {
+    return GlobalKey<NavigatorState>();
+  });
 
   Future<Map<String, dynamic>> registerUser(String studentId, String name,
       String position, String email, String emailCode) async {

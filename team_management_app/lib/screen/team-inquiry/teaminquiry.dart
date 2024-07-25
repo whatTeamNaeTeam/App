@@ -13,13 +13,16 @@ class _TeaminquiryState extends State<Teaminquiry> {
   Widget build(BuildContext context) {
     return const Scaffold(
       appBar: EntireAppbar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Row(
-              children: [Text("진행중")],
-            )
-          ],
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Row(
+                children: [Text("진행중")],
+              )
+            ],
+          ),
         ),
       ),
     );

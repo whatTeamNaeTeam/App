@@ -1,4 +1,10 @@
 class ButtonColors {
+  // Black color
+  static const int black = 0xFF000000;
+
+  // White color
+  static const int white = 0xFFFFFFFF;
+
   // Gray colors
   static const int gray0 = 0xFFF8F9FA;
   static const int gray1 = 0xFFF1F3F5;

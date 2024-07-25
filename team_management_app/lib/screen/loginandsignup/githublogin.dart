@@ -1,50 +1,105 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:team_management_app/api_service/api_service.dart';
+import 'package:team_management_app/assets/color/colors.dart';
 import 'package:team_management_app/screen/loginandsignup/moresignup.dart';
 import 'package:team_management_app/screen/team-inquiry/teaminquiry.dart';
+import 'package:team_management_app/provider/userdata_provider.dart';
+import 'package:team_management_app/utils/screen_size_util.dart';
 
-class GithubLogin extends StatefulWidget {
+class GithubLogin extends ConsumerStatefulWidget {
   const GithubLogin({super.key});
 
   @override
-  State<GithubLogin> createState() => GithubLoginState();
+  ConsumerState<GithubLogin> createState() => GithubLoginState();
 }
 
-class GithubLoginState extends State<GithubLogin> {
-  static bool? isLoggedIn = false; // 로그인 상태를 나타내는 bool
-
-  String clientID = '';
-
+class GithubLoginState extends ConsumerState<GithubLogin> {
   void signIn() async {
-    // 'context'를 인자로 전달
-    bool result = await ApiService.instance.signInWithGitHub(context);
+    await ApiService.instance.signInWithGitHub(ref);
+    bool result = ref.read(loginStatusProvider.notifier).state;
     if (!result) {
       if (!mounted) return;
-      // 추가 정보 입력란으로 넘어가기
       Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SignupPage(),
-          ));
-      // ScaffoldMessenger.of(context)
-      //     .showSnackBar(const SnackBar(content: Text('알수 없는 오류가 발생했습니다.')));
-    } else {
-      if (!mounted) return;
-      setState(() {
-        isLoggedIn = true; // 로그인 성공 시 isLoggedIn을 true로 설정
-      });
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SignupPage(),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = ref.watch(loginStatusProvider);
+
     return Scaffold(
       body: Center(
-        child: isLoggedIn!
+        child: isLoggedIn
             ? const Teaminquiry() // 로그인 성공 시 메인페이지로 넘어가기 - 팀 조회 페이지
-            : ElevatedButton(
-                onPressed: signIn,
-                child: const Text('Login with GitHub'),
+            : SizedBox(
+                width: ScreenSizeUtil.screenWidth(context) * 0.65,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      'assets/icons/wap_icon.png',
+                      width: 60,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    ElevatedButton.icon(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.resolveWith(
+                          (states) {
+                            if (states.contains(MaterialState.pressed)) {
+                              return const Color(
+                                  ButtonColors.gray4); // 눌렸을 때 색상
+                            }
+                            return const Color(ButtonColors.black); // 기본 색상
+                          },
+                        ),
+                        minimumSize: MaterialStateProperty.all<Size>(
+                          const Size(double.infinity, 45), // 버튼 최소 크기 설정
+                        ),
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(30), // 버튼 모서리 둥글게
+                          ),
+                        ),
+                        overlayColor: MaterialStateProperty.all<Color>(
+                          const Color(ButtonColors.white)
+                              .withOpacity(0.1), // 눌림 효과 색상
+                        ),
+                      ),
+                      onPressed: signIn,
+                      icon: Image.asset(
+                        'assets/icons/github_icon.png', // 여기에 GitHub 아이콘 경로를 넣습니다.
+                        width: 24,
+                        height: 24,
+                        color: const Color(ButtonColors.white),
+                      ),
+                      label: const Text(
+                        '깃허브로 시작하기',
+                        style: TextStyle(
+                            color: Color(ButtonColors.white), fontSize: 14),
+                        overflow: TextOverflow.ellipsis, // 텍스트가 넘칠 경우 생략 표시
+                      ),
+                    ),
+                    const SizedBox(height: 10), // 버튼과 텍스트 사이의 간
+                    const Text(
+                      '로그인 시 WAP의 개인정보처리방침과 이용 약관에 동의한 것으로 간주합니다.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Color(ButtonColors.gray4), fontSize: 12),
+                    ),
+                  ],
+                ),
               ),
       ),
     );

@@ -4,7 +4,6 @@ import 'package:team_management_app/api_service/api_service.dart';
 import 'package:team_management_app/assets/color/colors.dart';
 import 'package:team_management_app/screen/loginandsignup/githublogin.dart';
 import 'package:team_management_app/utils/screen_size_util.dart';
-import 'package:team_management_app/utils/uppercase_text_input_formatter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SignupPage extends StatefulWidget {

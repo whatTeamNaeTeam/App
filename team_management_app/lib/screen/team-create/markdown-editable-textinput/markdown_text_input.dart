@@ -92,9 +92,8 @@ class _MarkdownTextInputState extends State<MarkdownTextInput> {
         type, _controller.text, fromIndex, toIndex,
         titleSize: titleSize,
         link: link,
-        selectedText: selectedText ??
-            _controller.text
-                .substring(fromIndex, toIndex)); // TODO 버튼 입력시 예외 오류 수정
+        selectedText:
+            selectedText ?? _controller.text.substring(fromIndex, toIndex));
 
     _controller.value = _controller.value.copyWith(
         text: result.data,

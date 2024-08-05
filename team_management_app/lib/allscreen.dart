@@ -4,7 +4,7 @@ import 'package:team_management_app/screen/management/teammanagement.dart';
 import 'package:team_management_app/screen/management/unapproveteams.dart';
 import 'package:team_management_app/screen/loginandsignup/moresignup.dart';
 import 'package:team_management_app/screen/team-create/teamcreate.dart';
-import 'package:team_management_app/screen/team-inquiry/teaminquiry.dart';
+import 'package:team_management_app/screen/team-inquiry/mainscreen.dart';
 import 'package:team_management_app/screen/management/unapprovedusers.dart';
 
 class AllScreen extends StatefulWidget {
@@ -39,7 +39,7 @@ class _AllScreenState extends State<AllScreen> {
             ),
             ElevatedButton(
               onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const Teaminquiry())),
+                  MaterialPageRoute(builder: (context) => const MainScreen())),
               child: const Text("팀 조회 페이지"),
             ),
             const Divider(),

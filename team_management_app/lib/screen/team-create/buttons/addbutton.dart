@@ -13,7 +13,6 @@ class AddButton extends StatefulWidget {
 }
 
 class _AddButtonState extends State<AddButton> {
-  // TODO 팀 생성 post
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(

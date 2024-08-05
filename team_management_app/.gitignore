@@ -44,3 +44,6 @@ app.*.map.json
 
 # project.env
 .env
+
+# README Files
+*.gif

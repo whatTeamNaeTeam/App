@@ -6,8 +6,14 @@ class NeedDevelop {
       context: context,
       builder: (context) {
         return const AlertDialog(
-          title: Text('개발 필요'),
-          content: Text('개발이 필요합니다.'),
+          title: Text(
+            '서비스 준비중',
+            style: TextStyle(fontSize: 24),
+          ),
+          content: Text(
+            '서비스 준비중입니다! ㅜㅜ 빠른 시일 내에 이용해보실 수 있습니다!',
+            style: TextStyle(fontSize: 14),
+          ),
         );
       },
     );

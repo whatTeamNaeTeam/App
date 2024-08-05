@@ -13,16 +13,19 @@ import 'package:team_management_app/provider/userdata_provider.dart';
 
 class ApiService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  final dio.Dio _dio = dio.Dio(dio.BaseOptions(
-    baseUrl: dotenv.env['API_SERVER']!,
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 3),
-    headers: {
-      'X-from': 'app',
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    },
-  ));
+  final dio.Dio _dio = dio.Dio(
+    dio.BaseOptions(
+      baseUrl: dotenv.env['API_SERVER']!,
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 3),
+      headers: {
+        'X-from': 'app',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ),
+  );
+  bool _isRefreshing = false;
 
   static final ApiService _apiService = ApiService._internal();
 
@@ -43,31 +46,30 @@ class ApiService {
       },
       onError: (dio.DioException e, handler) async {
         if (e.response?.statusCode == 401) {
-          // 토큰 갱신 로직
-          if (await _refreshToken()) {
-            // 토큰 갱신 성공 시, 원래 요청 다시 시도
-            final options = e.requestOptions;
-            String? newAccessToken = await _storage.read(key: 'access');
-            if (newAccessToken != null) {
-              options.headers['Authorization'] = 'Bearer $newAccessToken';
-              log('New Authorization Header Added: Bearer $newAccessToken');
+          if (_isRefreshing) {
+            await Future.delayed(const Duration(milliseconds: 500));
+            return handler.resolve(await _retryRequest(e.requestOptions));
+          } else {
+            // 토큰 갱신 로직
+            _isRefreshing = true;
+            try {
+              if (await _refreshToken()) {
+                // 토큰 갱신 성공 시, 원래 요청 다시 시도
+                final options = e.requestOptions;
+                String? newAccessToken = await _storage.read(key: 'access');
+                if (newAccessToken != null) {
+                  options.headers['Authorization'] = 'Bearer $newAccessToken';
+                  log('New Authorization Header Added: Bearer $newAccessToken');
+                }
+                final cloneReq = await _retryRequest(options);
+                return handler.resolve(cloneReq);
+              }
+            } catch (error) {
+              log('Token refresh error: $error');
+              return handler.next(e);
+            } finally {
+              _isRefreshing = false;
             }
-            final cloneReq = await _dio.request(
-              options.path,
-              options: dio.Options(
-                method: options.method,
-                headers: options.headers,
-                contentType: options.contentType,
-                responseType: options.responseType,
-                followRedirects: options.followRedirects,
-                validateStatus: options.validateStatus,
-                receiveDataWhenStatusError: options.receiveDataWhenStatusError,
-                extra: options.extra,
-              ),
-              data: options.data,
-              queryParameters: options.queryParameters,
-            );
-            return handler.resolve(cloneReq);
           }
         }
         log('ERROR[${e.response?.statusCode}] => PATH: ${e.requestOptions.path}');
@@ -76,34 +78,58 @@ class ApiService {
     ));
   }
 
+  Future<dio.Response<dynamic>> _retryRequest(
+      dio.RequestOptions requestOptions) async {
+    final options = requestOptions;
+    return _dio.request(
+      options.path,
+      options: dio.Options(
+        method: options.method,
+        headers: options.headers,
+        contentType: options.contentType,
+        responseType: options.responseType,
+        followRedirects: options.followRedirects,
+        validateStatus: options.validateStatus,
+        receiveDataWhenStatusError: options.receiveDataWhenStatusError,
+        extra: options.extra,
+      ),
+      data: options.data,
+      queryParameters: options.queryParameters,
+    );
+  }
+
   static List<User> users = [];
   static ApiService get instance => _apiService;
 
 // 토큰 재발급 함수
   Future<bool> _refreshToken() async {
     try {
-      final response = await _dio.post('/api/auth/token/refresh');
+      final response = await _dio.post(
+        '/api/auth/token/refresh',
+      );
 
       if (response.statusCode == 200) {
-        final newAccessToken = response.headers['access']?.first;
-        if (newAccessToken != null) {
-          await _storage.write(key: 'access', value: newAccessToken);
-          return true;
-        }
+        final newAccessToken = response.data['access'];
+        await _storage.write(key: 'access', value: newAccessToken);
+        log('Token refreshed successfully');
+        return true;
       }
-      return false;
+
+      if (response.statusCode == 401) {
+        // TODO 로그아웃 구현
+      }
     } catch (e) {
-      log('Refresh Token Error: $e');
-      return false;
+      log('Token refresh failed: $e');
     }
+    return false;
   }
 
-// 깃허브 소셜 로그인 함수
+// 깃허브 로그인
   Future<void> signInWithGitHub(WidgetRef ref) async {
     final clientID = await _storage.read(key: 'clientID');
     if (clientID == null) {
       log('Client ID is null');
-      ref.read(loginStatusProvider.notifier).state = false;
+      return;
     }
 
     try {
@@ -113,15 +139,17 @@ class ApiService {
 
       final String result = await FlutterWebAuth.authenticate(
           url: authUrl, callbackUrlScheme: "myapp");
+      log('github 로그인 결과값 출력: $result');
 
       final String? code = Uri.parse(result).queryParameters['code'];
+      log('github 로그인 후 code값 출력: $code');
 
       if (code != null) {
         final response = await _dio.post(
           '/api/auth/github/login',
-          data: {'code': code},
+          data: {'code': code}, // Code와 함께 로그인 요청
         );
-
+        log('api/auth/github/login 응답 값: $response');
         if (response.statusCode == 200) {
           log('Success Github login');
           final accessToken = response.headers.value('access');
@@ -129,6 +157,7 @@ class ApiService {
             await _storage.write(
                 key: 'access',
                 value: accessToken); // accessToken을 Flutter SecureStorage에 갱신하기
+            log('FlutterSecureStorage에 accessToken을 성공적으로 갱신');
           }
           final userData = response.data as Map<String, dynamic>?;
           log('User data: $userData');
@@ -142,27 +171,22 @@ class ApiService {
                 userData['registered'] as bool; // 로그인 상태를 true로 변경
           } else {
             log('User data does not contain "registered" key');
-            ref.read(loginStatusProvider.notifier).state = false;
           }
         } else {
           log('Failed to login. Status code: ${response.statusCode}, response: ${response.data}');
-          ref.read(loginStatusProvider.notifier).state = false;
         }
       } else {
         log('Authorization code is null');
-        ref.read(loginStatusProvider.notifier).state = false;
       }
     } on PlatformException catch (e) {
       if (e.code == 'CANCELED') {
-        log('Login canceled by user: $e');
+        log('유저에 의한 로그인 취소: $e');
         _showRetryDialog(ref);
       } else {
-        log('PlatformException during login: $e');
+        log('로그인 중 PlatformException 발생: $e');
       }
-      ref.read(loginStatusProvider.notifier).state = false;
     } catch (e) {
-      log('Exception during login: $e');
-      ref.read(loginStatusProvider.notifier).state = false;
+      log('로그인 중 오류 발생: $e');
     }
   }
 
@@ -193,6 +217,13 @@ class ApiService {
         );
       },
     );
+  }
+
+  // 로그인 된 계정 로그아웃하기
+  Future<void> logoutCurrentAccount() async {
+    // // 로그아웃 URL 호출하여 세션 초기화
+    await FlutterWebAuth.authenticate(
+        url: 'https://github.com/logout', callbackUrlScheme: "myapp");
   }
 
   final navigatorProvider = Provider<GlobalKey<NavigatorState>>((ref) {

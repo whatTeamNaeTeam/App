@@ -1,10 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:team_management_app/api_service/api_service.dart';
 import 'package:team_management_app/assets/color/colors.dart';
 import 'package:team_management_app/screen/loginandsignup/moresignup.dart';
-import 'package:team_management_app/screen/team-inquiry/teaminquiry.dart';
 import 'package:team_management_app/provider/userdata_provider.dart';
+import 'package:team_management_app/screen/team-inquiry/mainscreen.dart';
 import 'package:team_management_app/utils/screen_size_util.dart';
 
 class GithubLogin extends ConsumerStatefulWidget {
@@ -17,7 +19,10 @@ class GithubLogin extends ConsumerStatefulWidget {
 class GithubLoginState extends ConsumerState<GithubLogin> {
   void signIn() async {
     await ApiService.instance.signInWithGitHub(ref);
-    bool result = ref.read(loginStatusProvider.notifier).state;
+    bool result = ref
+        .read(loginStatusProvider.notifier)
+        .state; // 전체 상태관리에서 login 처리가 되었는지 불러오기
+    log('github result: $result');
     if (!result) {
       if (!mounted) return;
       Navigator.push(
@@ -29,6 +34,10 @@ class GithubLoginState extends ConsumerState<GithubLogin> {
     }
   }
 
+  void logoutAccount() async {
+    await ApiService.instance.logoutCurrentAccount();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = ref.watch(loginStatusProvider);
@@ -36,7 +45,7 @@ class GithubLoginState extends ConsumerState<GithubLogin> {
     return Scaffold(
       body: Center(
         child: isLoggedIn
-            ? const Teaminquiry() // 로그인 성공 시 메인페이지로 넘어가기 - 팀 조회 페이지
+            ? const MainScreen() // 로그인 성공 시 메인페이지로 넘어가기 - 팀 조회 페이지
             : SizedBox(
                 width: ScreenSizeUtil.screenWidth(context) * 0.65,
                 child: Column(
@@ -97,6 +106,10 @@ class GithubLoginState extends ConsumerState<GithubLogin> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: Color(ButtonColors.gray4), fontSize: 12),
+                    ),
+                    TextButton(
+                      onPressed: logoutAccount,
+                      child: const Text('로그인 계정 삭제'),
                     ),
                   ],
                 ),

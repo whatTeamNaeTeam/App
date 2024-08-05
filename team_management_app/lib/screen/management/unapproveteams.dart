@@ -29,7 +29,6 @@ class _UnApproveTeamsState extends State<UnApproveTeams> {
   }
 
   void approveTeam(int teamid) async {
-    // TODO 팀 승인 기능 추가
     await ApiService.instance.approveTeams(teamid);
     loadTeams();
   }

@@ -79,6 +79,8 @@ flutter:
     - assets/icons/waiting.svg
     - assets/icons/wap_icon.png
     - assets/icons/github_icon.png
+    - assets/icons/teamCreate_gray5.png
+    - assets/icons/teamCreate_indigo4.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

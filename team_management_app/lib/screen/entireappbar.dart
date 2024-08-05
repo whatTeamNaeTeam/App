@@ -10,16 +10,22 @@ class EntireAppbar extends StatelessWidget implements PreferredSizeWidget {
   const EntireAppbar({super.key});
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   void appbarmainpage() {
     // AppBar 메인 페이지 로직
     log("AppBar icon tapped");
   }
 
+=======
+>>>>>>> Stashed changes
   @override
   Widget build(BuildContext context) {
 =======
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
     return AppBar(
       backgroundColor: Colors.white, // AppBar 배경 투명 설정

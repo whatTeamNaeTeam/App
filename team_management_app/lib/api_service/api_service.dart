@@ -25,7 +25,6 @@ class ApiService {
       },
     ),
   );
-  bool _isRefreshing = false;
 
   static final ApiService _apiService = ApiService._internal();
 
@@ -46,56 +45,28 @@ class ApiService {
       },
       onError: (dio.DioException e, handler) async {
         if (e.response?.statusCode == 401) {
-          if (_isRefreshing) {
-            await Future.delayed(const Duration(milliseconds: 500));
-            return handler.resolve(await _retryRequest(e.requestOptions));
-          } else {
-            // 토큰 갱신 로직
-            _isRefreshing = true;
-            try {
-              if (await _refreshToken()) {
-                // 토큰 갱신 성공 시, 원래 요청 다시 시도
-                final options = e.requestOptions;
-                String? newAccessToken = await _storage.read(key: 'access');
-                if (newAccessToken != null) {
-                  options.headers['Authorization'] = 'Bearer $newAccessToken';
-                  log('New Authorization Header Added: Bearer $newAccessToken');
-                }
-                final cloneReq = await _retryRequest(options);
-                return handler.resolve(cloneReq);
-              }
-            } catch (error) {
-              log('Token refresh error: $error');
-              return handler.next(e);
-            } finally {
-              _isRefreshing = false;
+          try {
+            if (await _refreshToken()) {
+              // 토큰 갱신 성공 시, 원래 요청 다시 시도
+              final options = e.requestOptions;
+              // String? newAccessToken = await _storage.read(key: 'access');
+              // if (newAccessToken != null) {
+              //   options.headers['Authorization'] = 'Bearer $newAccessToken';
+              //   log('New Authorization Header Added: Bearer $newAccessToken');
+              // }
+              final response = await _dio.fetch(options);
+              return handler.resolve(response);
             }
-          }
+          } catch (error) {
+            log('Token refresh error: $error');
+            return handler.next(e);
+          } finally {}
+        } else {
+          log('ERROR[${e.response?.statusCode}] => PATH: ${e.requestOptions.path}');
         }
-        log('ERROR[${e.response?.statusCode}] => PATH: ${e.requestOptions.path}');
         return handler.next(e);
       },
     ));
-  }
-
-  Future<dio.Response<dynamic>> _retryRequest(
-      dio.RequestOptions requestOptions) async {
-    final options = requestOptions;
-    return _dio.request(
-      options.path,
-      options: dio.Options(
-        method: options.method,
-        headers: options.headers,
-        contentType: options.contentType,
-        responseType: options.responseType,
-        followRedirects: options.followRedirects,
-        validateStatus: options.validateStatus,
-        receiveDataWhenStatusError: options.receiveDataWhenStatusError,
-        extra: options.extra,
-      ),
-      data: options.data,
-      queryParameters: options.queryParameters,
-    );
   }
 
   static List<User> users = [];
@@ -109,7 +80,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        final newAccessToken = response.data['access'];
+        final newAccessToken = response.headers.value('access');
         await _storage.write(key: 'access', value: newAccessToken);
         log('Token refreshed successfully');
         return true;

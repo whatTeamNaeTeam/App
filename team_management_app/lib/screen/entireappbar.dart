@@ -33,7 +33,7 @@ class EntireAppbar extends ConsumerWidget implements PreferredSizeWidget {
           ),
           Padding(
             padding: const EdgeInsets.only(right: 0), // 오른쪽 여백 추가
-            child: GestureDetector(
+            child: InkWell(
               onTap: () => NeedDevelop.showAlert(context),
               child: const Icon(
                 Icons.notifications,

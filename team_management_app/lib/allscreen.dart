@@ -4,7 +4,7 @@ import 'package:team_management_app/screen/management/teammanagement.dart';
 import 'package:team_management_app/screen/management/unapproveteams.dart';
 import 'package:team_management_app/screen/loginandsignup/moresignup.dart';
 import 'package:team_management_app/screen/team-create/teamcreate.dart';
-import 'package:team_management_app/screen/team-inquiry/mainscreen.dart';
+import 'package:team_management_app/screen/main-screen/mainscreen.dart';
 import 'package:team_management_app/screen/management/unapprovedusers.dart';
 
 class AllScreen extends StatefulWidget {

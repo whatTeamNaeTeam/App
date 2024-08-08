@@ -20,7 +20,7 @@ class _MainScreenState extends State<MainScreen> {
   static const List<Widget> _widgetOptions = <Widget>[
     Teaminquiry(), // 메인 페이지
     InterestTeams(), // 관심 페이지
-    TeamCreate(),
+    TeamCreate(), // 팀 생성 페이지
     MyPage(), // 마이 페이지
   ];
 

@@ -6,8 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
-import 'package:team_management_app/model/team.dart';
-import 'package:team_management_app/model/user.dart';
+import 'package:team_management_app/model/like_model.dart';
+import 'package:team_management_app/model/team_model.dart';
+import 'package:team_management_app/model/teaminquiry_model.dart';
+import 'package:team_management_app/model/user_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:team_management_app/provider/userdata_provider.dart';
 
@@ -393,6 +395,54 @@ class ApiService {
       }
     } catch (e) {
       log("approveTeams : Error approveTeams: $e");
+    }
+  }
+
+  // 팀 조회 API
+  Future<ApiResponse> teamInquiry({String? cursor}) async {
+    try {
+      final response = await _dio.get(
+        '/api/team/list',
+        queryParameters: {
+          'keyword': 'inprogress',
+          if (cursor != null) 'cursor': cursor,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final apiResponse = ApiResponse.fromJson(response.data);
+        return apiResponse;
+      } else {
+        log('Failed to load team list. Status code: ${response.statusCode}');
+        throw Exception('Failed to load team list');
+      }
+    } catch (e) {
+      log('Error during team inquiry: $e');
+      rethrow;
+    }
+  }
+
+  // 다음 페이지를 위한 커서 추출 메서드
+  String? extractCursorFromUrl(String? url) {
+    if (url == null) return null;
+    final uri = Uri.parse(url);
+    return uri.queryParameters['cursor'];
+  }
+
+  Future<Islike> isLikeApi(int teamId, int version) async {
+    try {
+      final response =
+          await _dio.post('/api/like/$teamId', data: {'version': version});
+      if (response.statusCode == 202) {
+        final apiResponse = Islike.fromJson(response.data);
+        return apiResponse;
+      } else {
+        log('Failed to load IsLike. Status code: ${response.statusCode}');
+        throw Exception('Failed to load IsLike');
+      }
+    } catch (e) {
+      log('Error during is Like: $e');
+      rethrow;
     }
   }
 }

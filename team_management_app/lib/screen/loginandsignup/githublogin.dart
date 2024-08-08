@@ -6,7 +6,7 @@ import 'package:team_management_app/api_service/api_service.dart';
 import 'package:team_management_app/assets/color/colors.dart';
 import 'package:team_management_app/screen/loginandsignup/moresignup.dart';
 import 'package:team_management_app/provider/userdata_provider.dart';
-import 'package:team_management_app/screen/team-inquiry/mainscreen.dart';
+import 'package:team_management_app/screen/main-screen/mainscreen.dart';
 import 'package:team_management_app/utils/screen_size_util.dart';
 
 class GithubLogin extends ConsumerStatefulWidget {

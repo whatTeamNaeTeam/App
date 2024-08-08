@@ -14,6 +14,8 @@
 ## 2024-08-08
 - 메인 페이지
 ### 📱 UI
-<ima src="https://github.com/user-attachments/assets/ae6a6d8b-622b-4db3-8c0e-0f76fc6663cf" width="200"/>
+
+<img src="https://github.com/user-attachments/assets/9e14be92-4a05-4e32-aa96-89e29883906a" width="200"/>
+
 
 

@@ -1,10 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:team_management_app/screen/loginandsignup/githublogin.dart';
 import 'package:team_management_app/utils/need_develop.dart';
 
 class EntireAppbar extends ConsumerWidget implements PreferredSizeWidget {
   const EntireAppbar({super.key});
+
+  void onClickLogo(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const GithubLogin(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,19 +28,22 @@ class EntireAppbar extends ConsumerWidget implements PreferredSizeWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 0), // 왼쪽 여백 추가
-            child: IconButton(
-              icon: Image.asset(
-                'assets/icons/wap_icon.png', // 커스텀 아이콘 경로
-                width: 45,
-                height: 45,
-                color: Colors.black, // 아이콘 색상 (필요에 따라 설정)
-              ),
-              onPressed: () => Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const GithubLogin())), // 아이콘 눌렀을 때 실행할 함수
+            child: Image.asset(
+              'assets/icons/wap_icon.png',
+              width: 45,
+              height: 45,
             ),
+
+            // 로고를 아이콘으로 바꾸고 싶을때 사용
+            // IconButton(
+            //   icon: Image.asset(
+            //     'assets/icons/wap_icon.png', // 커스텀 아이콘 경로
+            //     width: 45,
+            //     height: 45,
+            //     color: Colors.black, // 아이콘 색상 (필요에 따라 설정)
+            //   ),
+            //   onPressed: () => onClickLogo(context), // 아이콘 눌렀을 때 실행할 함수
+            // ),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 0), // 오른쪽 여백 추가

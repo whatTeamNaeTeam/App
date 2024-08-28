@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:team_management_app/assets/color/colors.dart';
 
-class AddButton extends StatefulWidget {
+class WideButton extends StatefulWidget {
   final VoidCallback? onPressed;
-  const AddButton({
-    super.key,
-    this.onPressed,
-  });
+  final int buttonColor;
+  final int textColor;
+  final String title;
+
+  const WideButton(
+      {super.key,
+      this.onPressed,
+      required this.buttonColor,
+      required this.textColor,
+      required this.title});
 
   @override
-  State<AddButton> createState() => _AddButtonState();
+  State<WideButton> createState() => _WideButtonState();
 }
 
-class _AddButtonState extends State<AddButton> {
+class _WideButtonState extends State<WideButton> {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(double.infinity, 50), // 최소 크기 설정
-        backgroundColor: const Color(
-          ButtonColors.indigo4,
+        backgroundColor: Color(
+          widget.buttonColor,
         ),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(
@@ -28,10 +33,10 @@ class _AddButtonState extends State<AddButton> {
         ),
       ),
       onPressed: widget.onPressed, // 버튼 클릭 시 실행할 함수
-      child: const Text(
-        '등록',
+      child: Text(
+        widget.title,
         style: TextStyle(
-          color: Colors.white,
+          color: Color(widget.textColor),
           fontSize: 16,
         ),
       ),

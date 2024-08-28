@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:team_management_app/assets/color/colors.dart';
 import 'package:team_management_app/screen/team-create/ImagePicker/imagepicker.dart';
-import 'package:team_management_app/screen/team-create/buttons/addbutton.dart';
-import 'package:team_management_app/screen/team-create/buttons/cancle.dart';
+import 'package:team_management_app/utils/buttons/widebutton.dart';
 import 'package:team_management_app/screen/team-create/genre/genre.dart';
 import 'package:team_management_app/screen/team-create/project-title/projecttitle.dart';
 import 'package:team_management_app/screen/team-create/reference-link/referencelink.dart';
@@ -100,13 +100,19 @@ class _TeamCreateState extends State<TeamCreate> {
                 height: 23,
               ),
               // 등록 버튼
-              AddButton(
+              WideButton(
                 onPressed: registerTeam,
+                buttonColor: ButtonColors.indigo4,
+                textColor: ButtonColors.white,
+                title: '등록하기',
               ),
               const SizedBox(height: 10), // 버튼 사이의 간격
               // 취소 버튼
-              const CancelButton(),
-              // TextButton(onPressed: test, child: const Text('테스트'))
+              const WideButton(
+                buttonColor: ButtonColors.red6,
+                textColor: ButtonColors.white,
+                title: '취소하기',
+              ),
             ],
           ),
         ),

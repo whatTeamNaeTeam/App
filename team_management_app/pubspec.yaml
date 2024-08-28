@@ -48,6 +48,7 @@ dependencies:
   http_parser: ^4.0.2
   dio: ^5.4.3+1
   flutter_riverpod: ^2.5.1
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,9 @@ flutter:
     - assets/icons/github_icon.png
     - assets/icons/teamCreate_gray5.png
     - assets/icons/teamCreate_indigo4.png
+    - assets/icons/Notion_app_logo.png
+    - assets/icons/github-mark.png
+    - assets/icons/google-logo.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

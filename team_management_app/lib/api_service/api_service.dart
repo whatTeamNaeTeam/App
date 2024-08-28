@@ -6,9 +6,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:team_management_app/model/detail_teaminquiry_model.dart'
+    as detailteamApiResponse;
 import 'package:team_management_app/model/like_model.dart';
 import 'package:team_management_app/model/team_model.dart';
-import 'package:team_management_app/model/teaminquiry_model.dart';
+import 'package:team_management_app/model/teaminquiry_model.dart'
+    as teamApiResponse;
 import 'package:team_management_app/model/user_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:team_management_app/provider/userdata_provider.dart';
@@ -51,11 +54,11 @@ class ApiService {
             if (await _refreshToken()) {
               // 토큰 갱신 성공 시, 원래 요청 다시 시도
               final options = e.requestOptions;
-              // String? newAccessToken = await _storage.read(key: 'access');
-              // if (newAccessToken != null) {
-              //   options.headers['Authorization'] = 'Bearer $newAccessToken';
-              //   log('New Authorization Header Added: Bearer $newAccessToken');
-              // }
+              String? newAccessToken = await _storage.read(key: 'access');
+              if (newAccessToken != null) {
+                options.headers['Authorization'] = 'Bearer $newAccessToken';
+                log('New Authorization Header Added: Bearer $newAccessToken');
+              }
               final response = await _dio.fetch(options);
               return handler.resolve(response);
             }
@@ -398,8 +401,8 @@ class ApiService {
     }
   }
 
-  // 팀 조회 API
-  Future<ApiResponse> teamInquiry({String? cursor}) async {
+  // 팀 페이지 조회 API
+  Future<teamApiResponse.ApiResponse> teamInquiry({String? cursor}) async {
     try {
       final response = await _dio.get(
         '/api/team/list',
@@ -410,7 +413,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        final apiResponse = ApiResponse.fromJson(response.data);
+        final apiResponse = teamApiResponse.ApiResponse.fromJson(response.data);
         return apiResponse;
       } else {
         log('Failed to load team list. Status code: ${response.statusCode}');
@@ -429,6 +432,7 @@ class ApiService {
     return uri.queryParameters['cursor'];
   }
 
+// 좋아요 기능 API
   Future<Islike> isLikeApi(int teamId, int version) async {
     try {
       final response =
@@ -442,6 +446,48 @@ class ApiService {
       }
     } catch (e) {
       log('Error during is Like: $e');
+      rethrow;
+    }
+  }
+
+  // 팀 상세 페이지 조회
+  Future<detailteamApiResponse.ApiResponse> detailTeamInquiry(
+      int teamId) async {
+    try {
+      final response = await _dio.get('/api/team/detail/$teamId');
+      if (response.statusCode == 200) {
+        final apiResponse =
+            detailteamApiResponse.ApiResponse.fromJson(response.data);
+        return apiResponse;
+      } else {
+        log('Failed to load detail Team. Status code: ${response.statusCode}');
+        log('Detail log: ${response.data}');
+        throw Exception('Failed to load detail Team');
+      }
+    } catch (e) {
+      log('Error during load detail team: $e');
+      rethrow;
+    }
+  }
+
+  // 팀 가입 신청
+  Future<bool> teamapply(String bio, int categoryid) async {
+    try {
+      final response = await _dio.post(
+        '/api/apply/$categoryid',
+        data: {'bio': bio},
+      );
+      if (response.statusCode == 201) {
+        log('성공적인 팀 지원');
+        log('${response.data}');
+        return true;
+      } else {
+        log('팀 지원 실패: ${response.data}');
+        log('${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      log('팀 지원 시 알수없는 에러 발생: $e');
       rethrow;
     }
   }

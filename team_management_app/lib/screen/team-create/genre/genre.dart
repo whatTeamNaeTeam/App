@@ -11,7 +11,7 @@ class Genre extends StatefulWidget {
 }
 
 class _GenreState extends State<Genre> {
-  List<String> items = ['앱', '웹', '게임', 'AI'];
+  List<String> items = ['웹', 'IOS', '안드로이드', '크로스플랫폼', '게임', '기타'];
   TextEditingController? _textEditingController;
 
   @override

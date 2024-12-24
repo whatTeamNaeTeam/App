@@ -49,6 +49,7 @@ dependencies:
   dio: ^5.4.3+1
   flutter_riverpod: ^2.5.1
   url_launcher: ^6.3.0
+  build_runner: ^2.4.9
 
 dev_dependencies:
   flutter_test:
@@ -85,7 +86,8 @@ flutter:
     - assets/icons/Notion_app_logo.png
     - assets/icons/github-mark.png
     - assets/icons/google-logo.png
-
+    - assets/icons/my_activity.png
+    - assets/icons/team_management.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

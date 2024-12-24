@@ -120,41 +120,20 @@ class _TeamCreateState extends State<TeamCreate> {
     );
   }
 
-  // void test() {
-  //   updatefunction();
-
-  //   print("프로젝트 제목: $projectTitle");
-
-  //   print("프로젝트 장르: $projectGenre");
-
-  //   print("전공 분야: $projectFields");
-
-  //   print("멤버 수: $_members");
-
-  //   print("마크 다운: $_markdownText");
-
-  //   print("파일: $_file");
-
-  //   print("참조 링크: $projectURL");
-  // }
-
-  void registerTeam() {
+  void registerTeam() async {
     updatefunction();
-    ApiService.instance.createNewTeam(projectTitle, projectGenre, projectFields,
-        _members, _markdownText, _file, projectURL);
-    // print("프로젝트 제목: $projectTitle");
+    bool isSuccess = await ApiService.instance.createNewTeam(
+        projectTitle,
+        projectGenre,
+        projectFields,
+        _members,
+        _markdownText,
+        _file,
+        projectURL);
 
-    // print("프로젝트 장르: $projectGenre");
-
-    // print("전공 분야: $projectFields");
-
-    // print("멤버 수: $memberCountList");
-
-    // print("마크 다운: $_markdownText");
-
-    // print("파일: $_file");
-
-    // print("참조 링크: $projectURL");
+    if (isSuccess) {
+      // TODO 메인페이지로 이동하기
+    }
   }
 
   // 팀 생성 값 update

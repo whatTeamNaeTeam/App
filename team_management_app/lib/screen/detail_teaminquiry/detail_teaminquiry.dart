@@ -29,7 +29,7 @@ class _DetailTeamInquiry extends State<DetailTeamInquiry> {
   @override
   void initState() {
     super.initState();
-    isLiked = widget.detailTeamData.isLike; // 초기 좋아요 상태 설정
+    isLiked = widget.detailTeamData.team.isLike; // 초기 좋아요 상태 설정
     likeCount = widget.detailTeamData.team.like; // 초기 좋아요 개수 설정
     version = widget.detailTeamData.team.version;
   }
@@ -103,7 +103,6 @@ class _DetailTeamInquiry extends State<DetailTeamInquiry> {
                 '프로젝트 설명', // 프로젝트 설명
                 style: titleTextstyle,
               ),
-              Text('$version'),
               Markdown(
                 shrinkWrap: true,
                 data: widget.detailTeamData.team.explain.toString(),

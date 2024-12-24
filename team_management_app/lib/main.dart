@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:team_management_app/allscreen.dart';
 import 'package:team_management_app/provider/userdata_provider.dart';
-// import 'screen/loginandsignup/githublogin.dart'; // GitHub 로그인 위젯을 포함하기 위한 임포트
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:team_management_app/screen/loginandsignup/githublogin.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +36,7 @@ class _MyAppState extends State<MyApp> {
           title: 'Flutter Demo',
           theme: ThemeData(),
           home: const Scaffold(
-            body: AllScreen(), // 통합된 GitHub 로그인 페이지
+            body: GithubLogin(), // 통합된 GitHub 로그인 페이지
           ),
         );
       },

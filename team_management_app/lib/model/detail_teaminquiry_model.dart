@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Category {
   final int id;
   final String title;
@@ -37,7 +36,7 @@ class LeaderInfo {
     return LeaderInfo(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
-      imageUrl: json['image_url'],
+      imageUrl: json['image_url'] ?? '',
     );
   }
 }
@@ -46,7 +45,7 @@ class Team {
   final int id;
   final String title;
   final String? explain;
-  final String? imageUrl;
+  final List<String>? imageUrl;
   final List<Category> category;
   final LeaderInfo leaderInfo;
   final int like;
@@ -54,19 +53,23 @@ class Team {
   final int view;
   final String genre;
   final List<String> urls;
+  final bool isLike;
+  final bool isApproved;
 
   Team({
     required this.id,
+    required this.leaderInfo,
     required this.title,
     this.explain,
-    this.imageUrl,
-    required this.category,
-    required this.leaderInfo,
+    required this.genre,
     required this.like,
     required this.version,
+    this.imageUrl,
     required this.view,
-    required this.genre,
+    required this.category,
     required this.urls,
+    required this.isLike,
+    required this.isApproved,
   });
 
   factory Team.fromJson(Map<String, dynamic> json) {
@@ -74,46 +77,30 @@ class Team {
     List<Category> categoryList =
         categoryJson.map((i) => Category.fromJson(i)).toList();
 
+    // image_url이 문자열이거나 리스트로 제공될 수 있기 때문에 유연하게 처리
+    List<String>? imageUrlList;
+    if (json['image_url'] is List) {
+      // 리스트일 경우 그대로 처리
+      imageUrlList = List<String>.from(json['image_url']);
+    } else if (json['image_url'] is String) {
+      // 문자열일 경우 이를 리스트로 변환
+      imageUrlList = [json['image_url']];
+    }
+
     return Team(
       id: json['id'] ?? 0,
       title: json['title'] ?? '',
-      explain: json['explain'] ?? '', // explain 필드 추가
-      imageUrl: json['image_url'],
+      explain: json['explain'] ?? '',
+      imageUrl: imageUrlList, // 위에서 처리된 imageUrlList 사용
       category: categoryList,
       leaderInfo: LeaderInfo.fromJson(json['leader_info'] ?? {}),
       like: json['like'] ?? 0,
       version: json['version'] ?? 0,
-      view: json['view'] ?? 0,
+      view: int.tryParse(json['view']?.toString() ?? '0') ?? 0,
       genre: json['genre'] ?? '',
       urls: List<String>.from(json['urls'] ?? []),
-    );
-  }
-
-  Team copyWith({
-    int? id,
-    String? title,
-    String? explain,
-    String? imageUrl,
-    List<Category>? category,
-    LeaderInfo? leaderInfo,
-    int? like,
-    int? version,
-    int? view,
-    String? genre,
-    List<String>? urls,
-  }) {
-    return Team(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      explain: explain ?? this.explain,
-      imageUrl: imageUrl ?? this.imageUrl,
-      category: category ?? this.category,
-      leaderInfo: leaderInfo ?? this.leaderInfo,
-      like: like ?? this.like,
-      version: version ?? this.version,
-      view: view ?? this.view,
-      genre: genre ?? this.genre,
-      urls: urls ?? this.urls,
+      isLike: json['is_like'] ?? false,
+      isApproved: json['is_approved'] ?? false,
     );
   }
 }
@@ -121,19 +108,16 @@ class Team {
 class ApiResponse {
   final Team team;
   final bool? isLeader;
-  final bool isLike;
 
   ApiResponse({
     required this.team,
     required this.isLeader,
-    required this.isLike,
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) {
     return ApiResponse(
       team: Team.fromJson(json['team'] ?? {}),
-      isLeader: json['is_leader'],
-      isLike: json['is_like'],
+      isLeader: json['is_leader'] ?? false,
     );
   }
 }

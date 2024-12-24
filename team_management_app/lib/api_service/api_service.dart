@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
@@ -14,6 +13,7 @@ import 'package:team_management_app/model/teaminquiry_model.dart'
     as teamApiResponse;
 import 'package:team_management_app/model/user_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:team_management_app/model/userprofilemodel.dart';
 import 'package:team_management_app/provider/userdata_provider.dart';
 
 class ApiService {
@@ -33,14 +33,37 @@ class ApiService {
 
   static final ApiService _apiService = ApiService._internal();
 
+  // 상태 플래그
+  bool isRegistering = false;
+
   ApiService._internal() {
     _dio.interceptors.add(dio.InterceptorsWrapper(
       onRequest: (options, handler) async {
-        String? accessToken = await _storage.read(key: 'access');
-        if (accessToken != null) {
-          options.headers['Authorization'] = 'Bearer $accessToken';
+        // 깃허브 로그인 경로는 인터셉터에서 제외
+        if (options.path == '/api/auth/github/login') {
+          return handler.next(options);
+        }
+
+        // 회원가입이 필요한 경우 tempToken 값을 사용한다.
+        if (isRegistering || options.path == '/api/auth/github/finish') {
+          String? tempToken = await _storage.read(key: 'temp');
+          log("temp -> tempToken: $tempToken");
+          if (tempToken != null) {
+            options.headers['Authorization'] = 'Bearer $tempToken';
+          } else {
+            log('No Access Token Found in tempToken');
+          }
         } else {
-          log('No Access Token Found');
+          // 회원가입이 필요 없는 경우 accessToken 값을 사용한다.
+          String? accessToken = await _storage.read(key: 'access');
+          log("access -> accessToken: $accessToken");
+          if (accessToken != null) {
+            options.headers['Authorization'] = 'Bearer $accessToken';
+          } else if (accessToken == null) {
+            log('No Access Token Found in accessToken');
+          } else {
+            log("An Error in AccessToken interceptor");
+          }
         }
         return handler.next(options);
       },
@@ -52,7 +75,6 @@ class ApiService {
         if (e.response?.statusCode == 401) {
           try {
             if (await _refreshToken()) {
-              // 토큰 갱신 성공 시, 원래 요청 다시 시도
               final options = e.requestOptions;
               String? newAccessToken = await _storage.read(key: 'access');
               if (newAccessToken != null) {
@@ -65,13 +87,74 @@ class ApiService {
           } catch (error) {
             log('Token refresh error: $error');
             return handler.next(e);
-          } finally {}
+          }
         } else {
           log('ERROR[${e.response?.statusCode}] => PATH: ${e.requestOptions.path}');
         }
         return handler.next(e);
       },
     ));
+  }
+
+  // 깃허브 로그인
+  Future<void> signInWithGitHub(WidgetRef ref) async {
+    final clientID = await _storage.read(key: 'clientID');
+    if (clientID == null) {
+      log('Client ID is null');
+      return;
+    }
+    try {
+      const String redirectUri = 'myapp://auth';
+      String authUrl = 'https://github.com/login/oauth/authorize'
+          '?client_id=$clientID&redirect_uri=$redirectUri';
+
+      final String result = await FlutterWebAuth.authenticate(
+          url: authUrl, callbackUrlScheme: "myapp");
+
+      final String? code = Uri.parse(result).queryParameters['code'];
+      if (code != null) {
+        final response = await _dio.post(
+          '/api/auth/github/login',
+          data: {'code': code},
+        );
+        log('api/auth/github/login 응답 값: $response');
+        if (response.statusCode == 200) {
+          final userData = response.data as Map<String, dynamic>?;
+          final registered = userData?['registered']; // true, false 분기 설정
+          final test = response.headers.value('access');
+          final test2 = response.headers.value('temp');
+          log('test1: $test');
+          log('test2: $test2');
+          if (userData != null && registered) {
+            // true => 유저가 등록되어 있으면 accessToken 설정
+            if (userData['registered'] as bool) {
+              final accessToken = response.headers.value('access');
+              if (accessToken != null) {
+                await _storage.write(key: 'access', value: accessToken);
+              }
+              ref.read(userProvider.notifier).state = userData;
+              ref.read(loginStatusProvider.notifier).state = true;
+            } else {
+              // 회원가입이 필요하다는 상태 플래그를 true로 설정
+              isRegistering = true;
+              final tempToken = response.headers.value('temp');
+              if (tempToken != null) {
+                await _storage.write(key: 'temp', value: tempToken);
+              }
+              ref.read(loginStatusProvider.notifier).state = false;
+            }
+          } else {
+            log('User data does not contain "registered" key');
+          }
+        } else {
+          log('Failed to login. Status code: ${response.statusCode}, response: ${response.data}');
+        }
+      } else {
+        log('Authorization code is null');
+      }
+    } catch (e) {
+      log('로그인 중 오류 발생: $e');
+    }
   }
 
   static List<User> users = [];
@@ -100,101 +183,6 @@ class ApiService {
     return false;
   }
 
-// 깃허브 로그인
-  Future<void> signInWithGitHub(WidgetRef ref) async {
-    final clientID = await _storage.read(key: 'clientID');
-    if (clientID == null) {
-      log('Client ID is null');
-      return;
-    }
-
-    try {
-      const String redirectUri = 'myapp://auth';
-      String authUrl = 'https://github.com/login/oauth/authorize'
-          '?client_id=$clientID&redirect_uri=$redirectUri';
-
-      final String result = await FlutterWebAuth.authenticate(
-          url: authUrl, callbackUrlScheme: "myapp");
-      log('github 로그인 결과값 출력: $result');
-
-      final String? code = Uri.parse(result).queryParameters['code'];
-      log('github 로그인 후 code값 출력: $code');
-
-      if (code != null) {
-        final response = await _dio.post(
-          '/api/auth/github/login',
-          data: {'code': code}, // Code와 함께 로그인 요청
-        );
-        log('api/auth/github/login 응답 값: $response');
-        if (response.statusCode == 200) {
-          log('Success Github login');
-          final accessToken = response.headers.value('access');
-          if (accessToken != null) {
-            await _storage.write(
-                key: 'access',
-                value: accessToken); // accessToken을 Flutter SecureStorage에 갱신하기
-            log('FlutterSecureStorage에 accessToken을 성공적으로 갱신');
-          }
-          final userData = response.data as Map<String, dynamic>?;
-          log('User data: $userData');
-
-          // userData와 registered 키의 존재 여부 확인
-          if (userData != null && userData.containsKey('registered')) {
-            // 사용자 정보를 프로바이더에 설정합니다.
-            ref.read(userProvider.notifier).state =
-                userData; // user 데이터를 userProvider에 저장
-            ref.read(loginStatusProvider.notifier).state =
-                userData['registered'] as bool; // 로그인 상태를 true로 변경
-          } else {
-            log('User data does not contain "registered" key');
-          }
-        } else {
-          log('Failed to login. Status code: ${response.statusCode}, response: ${response.data}');
-        }
-      } else {
-        log('Authorization code is null');
-      }
-    } on PlatformException catch (e) {
-      if (e.code == 'CANCELED') {
-        log('유저에 의한 로그인 취소: $e');
-        _showRetryDialog(ref);
-      } else {
-        log('로그인 중 PlatformException 발생: $e');
-      }
-    } catch (e) {
-      log('로그인 중 오류 발생: $e');
-    }
-  }
-
-// 로그인이 취소되었을때 다시 시도하는 함수
-  void _showRetryDialog(WidgetRef ref) {
-    final context = ref.read(navigatorProvider).currentContext!;
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('로그인 취소'),
-          content: const Text('로그인이 취소되었습니다. 다시 시도하시겠습니까?'),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('취소'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('다시 시도'),
-              onPressed: () {
-                Navigator.of(context).pop();
-                signInWithGitHub(ref); // 다시 시도
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   // 로그인 된 계정 로그아웃하기
   Future<void> logoutCurrentAccount() async {
     // // 로그아웃 URL 호출하여 세션 초기화
@@ -206,6 +194,7 @@ class ApiService {
     return GlobalKey<NavigatorState>();
   });
 
+// 추가적인 정보 기입 및 회원가입
   Future<Map<String, dynamic>> registerUser(String studentId, String name,
       String position, String email, String emailCode) async {
     try {
@@ -333,7 +322,7 @@ class ApiService {
       memberCountList, markdownText, file, projectURL) async {
     try {
       var formData = dio.FormData.fromMap({
-        'name': projectTitle,
+        'title': projectTitle,
         'explain': markdownText,
         'genre': projectGenre,
         'urls': projectURL,
@@ -450,12 +439,14 @@ class ApiService {
     }
   }
 
-  // 팀 상세 페이지 조회
+// 팀 상세 페이지 조회
   Future<detailteamApiResponse.ApiResponse> detailTeamInquiry(
       int teamId) async {
     try {
       final response = await _dio.get('/api/team/detail/$teamId');
       if (response.statusCode == 200) {
+        log('Response data: ${response.data}');
+        // 응답 데이터를 로깅하여 실제 데이터 구조를 확인
         final apiResponse =
             detailteamApiResponse.ApiResponse.fromJson(response.data);
         return apiResponse;
@@ -489,6 +480,55 @@ class ApiService {
     } catch (e) {
       log('팀 지원 시 알수없는 에러 발생: $e');
       rethrow;
+    }
+  }
+
+  // 관심있는 팀 페이지 조회 API
+  Future<teamApiResponse.ApiResponse> interestteamInquiry(
+      {String? cursor}) async {
+    try {
+      final response = await _dio.get(
+        '/api/team/list',
+        queryParameters: {
+          'keyword': 'inprogress',
+          if (cursor != null) 'cursor': cursor,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final apiResponse = teamApiResponse.ApiResponse.fromJson(response.data);
+
+        // 관심있는 팀 데이터 필터링 (is_like가 true인 팀만)
+        final filteredResults =
+            apiResponse.results.where((team) => team.isLike == true).toList();
+
+        // 필터링된 결과를 포함한 새로운 ApiResponse 반환
+        return teamApiResponse.ApiResponse(
+          next: apiResponse.next,
+          previous: apiResponse.previous,
+          results: filteredResults,
+        );
+      } else {
+        log('Failed to load team list. Status code: ${response.statusCode}');
+        throw Exception('Failed to load team list');
+      }
+    } catch (e) {
+      log('Error during team inquiry: $e');
+      rethrow;
+    }
+  }
+
+  // 유저 프로필 조회 API
+  Future<UserProfile> fetchUserProfile(int userId) async {
+    try {
+      final response = await _dio.get('/api/user/profile/$userId');
+      if (response.statusCode == 200) {
+        return UserProfile.fromJson(response.data);
+      } else {
+        throw Exception('유저 프로필 조회 불러오기 실패');
+      }
+    } catch (e) {
+      throw Exception('유저 프로필 조회 try 오류: $e');
     }
   }
 }

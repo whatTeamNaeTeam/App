@@ -124,7 +124,6 @@ class _TeaminquiryState extends State<Teaminquiry> {
     try {
       // API 요청 보내기
       final response = await ApiService.instance.detailTeamInquiry(teamId);
-      log(response.toString());
       // 요청이 성공적으로 완료되었을 경우, 데이터를 반환
       return response;
     } catch (e) {
